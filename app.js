@@ -333,10 +333,10 @@ function renderBoard() {
   for (let c = 0; c < 81; c++) {
     const v = g.v[c], n = g.n[c];
     const wrong = db.showMistakes && isWrong(c);
+    const lit = !v && digit && n & (1 << (digit - 1));
     const cls = 'cell' + (v ? (isGiven(c) ? ' given' : ' user') : '') +
-      (v && v === digit ? ' same' : '') + (wrong ? ' wrong' : '') + (c === hinted ? ' hinted' : '');
-    const lit = !v && digit && n & (1 << (digit - 1)) ? digit : 0;
-    const key = `${cls}|${v}|${v ? 0 : n}|${lit}`;
+      (v && v === digit ? ' same' : '') + (lit ? ' lit' : '') + (wrong ? ' wrong' : '') + (c === hinted ? ' hinted' : '');
+    const key = `${cls}|${v}|${v ? 0 : n}`;
     if (cache[c] === key) continue;
     cache[c] = key;
     const el = cells[c];
@@ -344,7 +344,7 @@ function renderBoard() {
     if (v) el.innerHTML = `<div class="val">${v}</div>`;
     else if (n) {
       let h = '<div class="notes">';
-      for (let d = 1; d <= 9; d++) h += `<span${d === lit ? ' class="on"' : ''}>${n & (1 << (d - 1)) ? d : ''}</span>`;
+      for (let d = 1; d <= 9; d++) if (n & (1 << (d - 1))) h += `<span>${d}</span>`;
       el.innerHTML = h + '</div>';
     } else el.textContent = '';
   }
